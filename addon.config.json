@@ -1,0 +1,30 @@
+{
+  "AddonUUID": "b78f61f0-e9f0-4650-9ab1-d8b0906505ec",
+  "AddonVersion": "0.0.2",
+  "DebugPort": 4500,
+  "WebappBaseUrl": "https://app.sandbox.pepperi.com",
+  "DefaultEditor": "main",
+  "Endpoints": [
+    "installation.ts",
+    "api.ts"
+  ],
+  "Editors": [
+    "main"
+  ],
+  "Assets": [
+    "en.json",
+    "en.ngx-lib.json"
+  ],
+  "PublishConfig": {
+    "ClientStack": "ng10",
+    "Editors": [
+      {
+        "ParentPackageName": "Training",
+        "PackageName": "todos",
+        "Description": "Oded's todos"
+      }
+    ],
+    "Dependencies": {},
+    "CPISide": []
+  }
+}
