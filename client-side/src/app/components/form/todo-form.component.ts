@@ -5,6 +5,7 @@ import { AddonService } from '../../services/addon.service';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { GenericListDataSource } from '../generic-list/generic-list.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TodosService } from 'src/app/services/todos.service';
 
 
 @Component({
@@ -22,7 +23,8 @@ export class TodoForm implements OnInit {
         public translate: TranslateService,
         public dialogService: PepDialogService,
         public router: Router,
-        public activatedRoute: ActivatedRoute
+        public activatedRoute: ActivatedRoute,
+        private todosService: TodosService
     ) {
 
         this.layoutService.onResize$.subscribe(size => {
@@ -30,8 +32,30 @@ export class TodoForm implements OnInit {
         });
 
         this.key = this.activatedRoute.snapshot.params["todo_uuid"];
-        this.loading = false;
+        this.loading = true;
 
+        if(this.key === 'new_todo'){
+            this.mode = 'Add';
+        }
+        else{
+            this.mode = 'Edit';
+        }
+
+        if(this.mode === "Edit"){
+            this.todosService.getTodo(this.key).then(obj => {
+                if(!obj[0].DueDate){
+                    obj[0].DueDate = '';
+                }
+                this.obj = obj[0];
+                //console.log(`after setting obj: ${this.obj.Key}`)
+                this.loading = false;
+            });
+        }
+
+        else{
+            this.loading = false;
+        }
+        
 
     }
 
@@ -40,6 +64,13 @@ export class TodoForm implements OnInit {
     field1: string = "Hello"
     loading: boolean = true
     key: string;
+
+    obj = {
+        Key: '',
+        Name: 'default name',
+        Description: 'default description',
+        DueDate: ''
+    }
 
     ngOnInit(){
     }
@@ -55,10 +86,9 @@ export class TodoForm implements OnInit {
         this.goBack();
     }
 
-    saveClicked() {
-        this.dialogService.openDefaultDialog(new PepDialogData({
-            title: 'Saved'
-        }))
+    async saveClicked() {
+        await this.todosService.upsertTodo(this.obj);
+        this.goBack();
     }
 
     cancelClicked() {

@@ -2,10 +2,12 @@
     display: grid;
     overflow-y: scroll;
     gap: 1px 10px;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "key ." "field1 field1";
+    grid-template-columns: 1fr;
+    grid-template-areas: "name" "desc" "due";
     
-    .key { grid-area: key; }
+    .name { grid-area: name; }
   
-    .field1 { grid-area: field1; }
+    .desc { grid-area: desc; }
+
+    .due { grid-area: due; }
   }

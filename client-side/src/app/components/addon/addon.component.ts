@@ -1,11 +1,12 @@
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { PepLayoutService, PepScreenSizeType } from '@pepperi-addons/ngx-lib';
 import { AddonService } from '../../services/addon.service';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
-import { GenericListDataSource } from '../generic-list/generic-list.component';
+import { GenericListComponent, GenericListDataSource } from '../generic-list/generic-list.component';
 import { TodoForm } from '../form/todo-form.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TodosService } from '../../services/todos.service';
 
 
 @Component({
@@ -17,13 +18,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class AddonComponent implements OnInit {
 
     screenSize: PepScreenSizeType;
-
+    @ViewChild(GenericListComponent) GenericList: GenericListComponent;
     constructor(
         public addonService: AddonService,
         public layoutService: PepLayoutService,
         public translate: TranslateService,
         public router: Router,
-        public route: ActivatedRoute
+        public route: ActivatedRoute,
+        public activatedRoute: ActivatedRoute,
+        public todosService: TodosService
     ) {
 
         this.layoutService.onResize$.subscribe(size => {
@@ -35,22 +38,19 @@ export class AddonComponent implements OnInit {
     ngOnInit(){
     }
 
-    listDataSource: GenericListDataSource = {
-        getList: async (state) => {
-            return [
-                {
-                    Key: 'key1',
-                    Field1: 'Hello',
-                    Field2: true
-                },
-                {
-                    Key: 'key1',
-                    Field1: 'World',
-                    Field2: false
-                }
-            ]
-        },
+    goAdd() {
+        this.router.navigate(['./new_todo'], {
+            relativeTo: this.activatedRoute,
+            queryParamsHandling: 'preserve'
+        })
+    }
 
+    listDataSource: GenericListDataSource = {
+        // the objects in the list
+        getList: async (state) => {
+            return this.todosService.getAllTodos();
+        },
+        // what you see in the list
         getDataView: async () => {
             return {
                 Context: {
@@ -62,23 +62,43 @@ export class AddonComponent implements OnInit {
                   Title: '',
                   Fields: [
                     {
-                        FieldID: 'Field1',
+                        FieldID: 'Name',
                         Type: 'TextBox',
-                        Title: 'Field1',
+                        Title: 'Name',
                         Mandatory: false,
                         ReadOnly: true
                     },
                     {
-                        FieldID: 'Field2',
+                        FieldID: 'Description',
+                        Type: 'TextBox',
+                        Title: 'Description',
+                        Mandatory: false,
+                        ReadOnly: true
+                    },
+                    {
+                        FieldID: 'DueDate',
+                        Type: 'Date',
+                        Title: 'Due date',
+                        Mandatory: false,
+                        ReadOnly: true
+                    },
+                    {
+                        FieldID: 'Completed',
                         Type: 'Boolean',
-                        Title: 'Field2',
+                        Title: 'Completed',
                         Mandatory: false,
                         ReadOnly: true
                     }
                   ],
                   Columns: [
                     {
-                      Width: 25
+                        Width: 25
+                    },
+                    {
+                        Width: 25
+                    },
+                    {
+                        Width: 25
                     },
                     {
                       Width: 25
@@ -90,8 +110,9 @@ export class AddonComponent implements OnInit {
         },
 
         getActions: async (objs) =>  {
-            return objs.length ? [
-                {
+            const output = [];
+            if(objs.length === 1){
+                output.push({
                     title: this.translate.instant("Edit"),
                     handler: async (objs) => {
                         this.router.navigate([objs[0].Key], {
@@ -99,8 +120,25 @@ export class AddonComponent implements OnInit {
                             queryParamsHandling: 'merge'
                         });
                     }
+                })
+            }
+            if(objs.length >= 1){
+                output.push({ //replace foreach with for
+                    title: this.translate.instant("Delete"),
+                    handler: async (objs) => {
+                        await this.todosService.deleteTodos(objs);
+                        this.GenericList.reload();
                 }
-            ] : []
+                });
+                output.push({
+                    title: this.translate.instant("Mark as done"),
+                    handler: async (objs) => {
+                        await this.todosService.completeTodos(objs);
+                        this.GenericList.reload();
+                    }
+                })
+            }
+            return output;
         }
     }
 }

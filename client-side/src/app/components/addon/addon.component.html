@@ -1,4 +1,9 @@
 <div>
+    <pep-top-bar [inline]="false">
+        <div  header-end-content>
+            <pep-button [value]="'Add' | translate" [styleType]="'strong'" (buttonClick)="goAdd()"></pep-button>
+        </div>
+    </pep-top-bar>
     <h3>
         Manage a list of todo's.
         You can create and edit this list here
