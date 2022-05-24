@@ -18,7 +18,7 @@ export class AddonService {
             baseURL: this.papiBaseURL,
             token: this.session.getIdpToken(),
             addonUUID: this.addonUUID,
-            suppressLogging:true
+            suppressLogging:true   
         })
     }
 

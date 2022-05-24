@@ -37,6 +37,16 @@ class TodosService {
         return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(body)
     }
 
+    testAudit(body){
+        if (!body.Key){
+            body.Key = 'key1';
+        }
+        if(!body.IsChanged){
+            body.IsChanged = false;
+        }
+        return this.papiClient.addons.data.uuid(this.addonUUID).table("AuditTest2").upsert(body)
+    }
+
     // only called via the todos_delete which gives an array
     deleteTodos(body){
         return body.map(element => {

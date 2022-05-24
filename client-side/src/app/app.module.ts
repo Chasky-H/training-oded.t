@@ -13,6 +13,7 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { PepFileService, PepAddonService } from '@pepperi-addons/ngx-lib';
 import { PepPageLayoutModule } from '@pepperi-addons/ngx-lib/page-layout';
 import { PepButtonModule } from '@pepperi-addons/ngx-lib/button';
+import { PepAttachmentModule } from '@pepperi-addons/ngx-lib/attachment';
 import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
 import { AddonComponent } from './components/addon/addon.component';
 import { PepDialogModule } from '@pepperi-addons/ngx-lib/dialog';
@@ -23,7 +24,8 @@ import { TodoForm } from './components/form/todo-form.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { PepTextboxModule } from '@pepperi-addons/ngx-lib/textbox';
 import { PepDateModule } from '@pepperi-addons/ngx-lib/date';
-
+import { PepFileStatusPanelModule } from '@pepperi-addons/ngx-composite-lib/file-status-panel';
+import { PepDIMXModule } from '@pepperi-addons/ngx-composite-lib/dimx-export'
 export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
     const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
@@ -65,13 +67,16 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         PepTopBarModule,
         PepMenuModule,
         PepPageLayoutModule,
+        PepDIMXModule,
         PepButtonModule,
+        PepAttachmentModule,
         PepDialogModule,
         PepListModule,
         PepSearchModule,
         PepTextboxModule,
         MatDialogModule,
         PepDateModule,
+        PepFileStatusPanelModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
