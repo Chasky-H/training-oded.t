@@ -12,12 +12,19 @@
     <br/>
     <div *ngIf="!loading" class="form">
         <div class="grid-container">
-            <div class="key">
-                <pep-textbox [(value)]="key" [disabled]="true" [readonly]="true"></pep-textbox>
+            <div class="name">
+                <h5 class = "fieldName"> <span class = mandatory> * </span> {{ 'Name' | translate}}</h5>
+                <pep-textbox [(value)]='obj.Name' [disabled]="false" [readonly]="false"></pep-textbox>
             </div>
 
-            <div class="field1">
-                <pep-textbox [(value)]="field1" [disabled]="false" [readonly]="false"></pep-textbox>
+            <div class="desc">
+                <h5 class = "fieldName"> <span class = mandatory> * </span> {{ 'Description' | translate}}</h5>
+                <pep-textbox [(value)]='obj.Description' [disabled]="false" [readonly]="false"></pep-textbox>
+            </div>
+
+            <div class="due">
+                <h5>{{ 'Due Date' | translate}}</h5>
+                <pep-date [(value)]="obj.DueDate" [disabled]="false" [readonly]="false"></pep-date>
             </div>
         </div>          
     </div>

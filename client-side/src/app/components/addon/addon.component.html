@@ -1,11 +1,41 @@
 <div>
+    <pep-top-bar [inline]="false" >
+        <div  header-end-content>
+            <pep-button [value]="'Add' | translate" [styleType]="'strong'" (buttonClick)="goAdd()"></pep-button>
+        </div>
+    </pep-top-bar>
     <h3>
-        Manage a list of todo's.
-        You can create and edit this list here
+        Oren, this is for you to test my UI
     </h3>
-    <generic-list [allowMultipleSelection]="true" [inline]="true" [dataSource]="listDataSource">
+    <!-- <generic-list [allowMultipleSelection]="true" [inline]="true" [dataSource]="listDataSource" >
 
     </generic-list>
+    <pep-file-status-panel [title]="'Title'" *ngIf="iFileArray?.length" [filesList]="iFileArray"></pep-file-status-panel> -->
+    <pep-menu
+    [text]="'text'"
+    iconName="system_menu"
+    type="action"
+    styleType="weak"
+    sizeType="md"
+    classNames="hahah"
+    [items]="menuItems"
+    [selectedItem]="selectedMenuItem"
+    [disabled]="false"
+    (menuItemClick)="menuItemClick($event)"
+    (menuClick)="menuClick($event)"
+  ></pep-menu>
+
+
+<pep-dimx #dimx [DIMXAddonUUID]="'b78f61f0-e9f0-4650-9ab1-d8b0906505ec'" [DIMXResource]="'Todos'" (DIMXProcessDone)='onDIMXProcessDone($event);'></pep-dimx>
+<br>
+<label>^^^^^ OVER HERE OREN ^^^^^</label>
+<br>
+<label>Open console (f12) and look at the logs. <br>
+If the event works, at the end of the process there should be a "DIMXProcessDone" log<br>
+Followed by an array of information about all items that were processed.<br>
+You can try to import multiple files and export at the same time, the event will be emitted only when ALL processes are done<br>
+Then the file panel at the side should close.</label>
+
 </div>
 
 
