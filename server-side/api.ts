@@ -118,49 +118,83 @@ export async function exportRelation(client:Client, request:Request){
     }
 }
 
+// Relation import function for Host resource. changes its objects keys according to the mapping object, 
+// also changes the referenced keys according to mapping object
 export function RecursiveImportTestHost_ImportRelativeURL(client:Client, request:Request){
-    const mappingObject:{[addonUUID_resource:string]:{
-        [original_key:string]:{Action:"Replace", NewKey:string}
-    }} = request.body["Mapping"];
+    
     const addonUUID = 'b78f61f0-e9f0-4650-9ab1-d8b0906505ec';
     const name= 'RecursiveImportTestHost';
-    const refName = 'RecursiveImportTestReference'
-    const myMapping = mappingObject[`${addonUUID}_${name}`];
-    const refMapping = mappingObject[`${addonUUID}_${refName}`];
-    if (request.body && request.body.DIMXObjects){
-        for (let index = 0; index < request.body.DIMXObjects.length; index++) {
-            const element = request.body.DIMXObjects[index];
-            if (myMapping[element.Object.Key]){
-                element.Object.Key = myMapping[element.Object.Key].NewKey;
+    const refName = 'RecursiveImportTestReference';
+    
+    // this is our general mapping object, containing the mapping objects of all resources
+    if(request.body["Mapping"]){
+        const mappingObject:{[addonUUID_resource:string]:{
+            [original_key:string]:{Action:"Replace", NewKey:string}
+        }} = request.body["Mapping"];
+
+
+        if(mappingObject[`${addonUUID}_${name}`] && mappingObject[`${addonUUID}_${refName}`]){
+            // myMapping is the specific mapping object of the Host resource
+            const myMapping = mappingObject[`${addonUUID}_${name}`];
+            // regMapping is the specific mapping object of the Reference resource
+            const refMapping = mappingObject[`${addonUUID}_${refName}`];
+
+
+            if (request.body && request.body.DIMXObjects){
+                for (let index = 0; index < request.body.DIMXObjects.length; index++) {
+                    const element = request.body.DIMXObjects[index];
+
+                    // change own key if myMapping contains a mapping for it
+                    if (myMapping[element.Object.Key]){
+                        element.Object.Key = myMapping[element.Object.Key].NewKey;
+                    }
+                    // change referenced key if refMapping contains a mapping for it
+                    if (refMapping[element.Object.Prop2]){
+                        element.Object.Prop2 = refMapping[element.Object.Prop2].NewKey;
+                    }
+                }
             }
-            if (refMapping[element.Object.Prop2]){
-                element.Object.Prop2 = refMapping[element.Object.Prop2].NewKey;
-            }
-        }
+        }    
     }
+    
     return request.body;
 }
 
+// Relation import function for Reference resource. changes its objects keys according to the mapping object
 export function RecursiveImportTestReference_ImportRelativeURL(client:Client, request:Request){
-    const mappingObject:{[addonUUID_resource:string]:{
-        [original_key:string]:{Action:"Replace", NewKey:string}
-    }} = request.body["Mapping"];
     const addonUUID = 'b78f61f0-e9f0-4650-9ab1-d8b0906505ec';
     const name= 'RecursiveImportTestReference';
-    const myMapping = mappingObject[`${addonUUID}_${name}`];
-    if (request.body && request.body.DIMXObjects){
-        for (let index = 0; index < request.body.DIMXObjects.length; index++) {
-            const element = request.body.DIMXObjects[index];
-            if(myMapping[element.Object.Key]){
-                element.Object.Key = myMapping[element.Object.Key].NewKey;
+    // this is our general mapping object, containing the mapping objects of all resources
+    if(request.body["Mapping"]){
+        const mappingObject:{[addonUUID_resource:string]:{
+            [original_key:string]:{Action:"Replace", NewKey:string}
+        }} = request.body["Mapping"];
+
+        
+
+        if(mappingObject[`${addonUUID}_${name}`]){
+            // myMapping is the specific mapping object of the Reference resource
+            const myMapping = mappingObject[`${addonUUID}_${name}`];
+            if (request.body && request.body.DIMXObjects){
+                for (let index = 0; index < request.body.DIMXObjects.length; index++) {
+                    const element = request.body.DIMXObjects[index];
+                    // change own key if myMapping contains a mapping for it
+                    if(myMapping[element.Object.Key]){
+                        element.Object.Key = myMapping[element.Object.Key].NewKey;
+                    }
+                }
             }
-        }
+        } 
     }
     return request.body;
 }
 
+// Mapping function for the Host resource. adds "Mapped" to the beginning of the key value.
+// input is 
+//{Objects: [record1, record2,...]}
 export function RecursiveImportTestHost_MappingRelativeURL(client:Client, request:Request){
     const mappingArray:{[original_key:string]:{Action:"Replace", NewKey:string}} = {};
+
     const objects:any[] = request.body.Objects;
     objects.forEach(el => {
         mappingArray[el.Key]= {Action:"Replace", NewKey:`Mapped ${el.Key}`}
@@ -168,6 +202,7 @@ export function RecursiveImportTestHost_MappingRelativeURL(client:Client, reques
     return {Mapping:mappingArray};
 }
 
+// Mapping function for the Reference resource. adds "Mapped" to the beginning of the key value.
 export function RecursiveImportTestReference_MappingRelativeURL(client:Client, request:Request){
     const mappingArray:{[original_key:string]:{Action:"Replace", NewKey:string}} = {};
     const objects:any[] = request.body.Objects;
@@ -177,22 +212,22 @@ export function RecursiveImportTestReference_MappingRelativeURL(client:Client, r
     return {Mapping:mappingArray};
 }
 
+// fix function for Contained resource. all it does is add "Fixed" to the beginning of the property "ContainedProp1"
 export function RecursiveImportTestContained_FixRelativeURL(client:Client, request:Request){
     const obj = request.body["Object"];
-    obj["Prop1"] = `Fixed ${obj["Prop1"]}`;
-    return obj|
-}
-export function fixHost(clien                                                                                                           t:Client, request:Request){
+    obj["ContainedProp1"] = `Fixed ${obj["ContainedProp1"]}`;
+    return obj}
+
+export function fixHost(client:Client, request:Request){
     const obj = request.body["Object"];
     obj["NewPropertyInFix"]=`New value for key ${obj.Key}`;
     return obj;
 }
-
+    
 export function fixContained(client:Client, request:Request){
     const obj = request.body["Object"];
-    obj["ContainedInnerStringData"]=`fixed ${obj["ContainedInnerStringData"]}`;
-    obj["ContainedInnerIntegerData"]=obj["ContainedInnerIntegerData"] + 100;
-    return obj;
+    obj["NewPropertyInFix"]=`New value for key ${obj.Key}`;
+ return obj;
 }
 
 export function fixDynamicContained(client:Client, request:Request){
